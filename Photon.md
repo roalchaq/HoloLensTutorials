@@ -1,19 +1,21 @@
-# Setting up Photon
+# Setting up Photon Unity Networking
 
-For this, follow [Setting up Photon](https://docs.microsoft.com/en-gb/windows/mixed-reality/mrlearning-sharing(photon)-ch1#setting-up-photon).
+To create a multi-user application, first follow the procedure described [in this link](https://docs.microsoft.com/en-gb/windows/mixed-reality/mrlearning-sharing(photon)-ch1#setting-up-photon) to import Photon Unity Networking (PUN) into your Unity project. Then, read the following definitions to better understand what we will be doing next:
 
-## Rooms
+### Rooms
 
 The Photon Cloud is built with "room-based games" in mind, meaning there is a limited number of players (let's say: less than 10) per match, separated from anyone else. In a room (usually) everyone receives whatever the others send. Outside of a room, players are not able to communicate, so we always want them in rooms as soon as possible.
 All rooms have a name as identifier. Unless the room is full or closed, we can join it by name. Conveniently, the Master Server can provide a list of rooms for our app.
 
-## Lobby
+### Lobby
 
 The lobby for your application exists on the Master Server to list rooms for your game. In our case, we will not make use of the lobby and simply join a random room if one is available, or create a new room if no existing room can be joined (rooms can have a maximum capacity, and so they can potentially be all full).
 
+## Setting up Photon 
+
 Import the [MRTK.HoloLens2.Unity.Tutorials.Assets.MultiUserCapabilities.2.1.0.1.unitypackage](https://github.com/microsoft/MixedRealityLearning/releases/download/multi-user-capabilities-v2.1.0.1/MRTK.HoloLens2.Unity.Tutorials.Assets.MultiUserCapabilities.2.1.0.1.unitypackage) Unity custom package. Once finished, save the project by clicking File, then Save.
 
-## Launcher Prefab 
+### Launcher Prefab 
 
 This module covers the critical aspects of connecting and joining a room using PUN.
 
@@ -133,7 +135,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 }
 ```
 
-## Game Manager Prefab
+### Game Manager Prefab
 
 In all cases, the minimum requirement for a User Interface is to be able to quit the room. Let's start by creating what we'll call the *Game Manager prefab*, and the first task it will handle quitting the room the local Player is currently in.
 
@@ -206,7 +208,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 ```
 Drag and drop the *Game Manager* GameObject to the 'Game Manager' slot on the Launcher class (part of the 'Launcher' GameObject in the Hierarchy).
 
-## Player Prefab
+### Player Prefab
 
 To instantiate our "Player" prefab  when we've just entered the room. We can rely on the GameManager Script *Start()* method which will indicated we've loaded the scene, which means by our design that we are in a room. An important rule to know about PUN is, that a Prefab, that should get instantiated over the network, has to be inside a Resources folder.
 
@@ -268,7 +270,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
 Once all the steps above are complete follow the [Build and deploy the application](https://docs.microsoft.com/en-gb/windows/mixed-reality/mrlearning-base-ch1#2-build-and-deploy-the-application) instructions. When ready, press the Play button and connect your HoloLens 2. You should see a sphere moving around as you move your player using the keyboard arrows in Game view. This will be shown for any user that joins your Unity project!
 
-# Sharing object movements with multiple users
+## Sharing object movements with multiple users
 
 Now we need to share the movements of objects so that all participants of a shared session can collaborate and view each others' interactions.
 
