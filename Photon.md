@@ -135,6 +135,68 @@ public class Launcher : MonoBehaviourPunCallbacks
 }
 ```
 
+### Player Prefab
+
+To instantiate our "Player" prefab  when we've just entered the room. We can rely on the GameManager Script *Start()* method which will indicated we've loaded the scene (next section), which means by our design that we are in a room. An important rule to know about PUN is, that a Prefab, that should get instantiated over the network, has to be inside a Resources folder.
+
+1. Create a new c# script *PlayerManager*
+2. Create an empty GameObject in the Scene, name it 'Player'
+3. Drop the *PlayerManager* script onto the GameObject 'Player'
+4. Next, we create spheres to represent each person that joins a shared experience. Right-click the 'Player' object you just created, scroll-down to "3D Object and click Sphere. This will create a sphere game object as a child of the 'Player' object.
+5. Scale the sphere down to x=0.06, y=0.06, ad z=0.06.
+6. In your "Project Browser", create a folder named exactly "Resources" somewhere, typically it's suggested that you organized your content, so could have something like "Resources\Prefabs" 
+7. Turn *Player* into a prefab by dragging it from the scene Hierarchy to the "Resources\Prefabs" folder, it will turn blue in the Hierarchy.
+8. Remove the 'Player' object from the Hierarchy
+
+We need to have a **PhotonView component** attached to our *Player* prefab. A **PhotonView** is what connects together the various instances on each computers and define what components to observe and how to observe these components. 
+
+1. Add a *PhotonView* Component to the 'Player' prefab
+2. Set the Observe Option to Unreliable On Change
+3. Notice *PhotonView* warns you that you need to observe something for this to have any effects. You can ignore this for now, as those observed components will be setup later in the tutorial.
+
+The obvious feature we want to synchronize is the Position and Rotation of the character so that when a player is moving around, the character behave in a similar way on other players' instances of the game. To make this common task easy, we are going to use a **PhotonTransformView** component.
+
+1. Add a *PhotonTransformView* to 'Player' Prefab
+2. Drag the *PhotonTransformView* from its header title onto the first observable component entry on the *PhotonView* component
+3. Now, check Synchronize Position in *PhotonTransformView*
+4. Check Synchronize Rotation
+5. Edit *PlayerManager* Script
+6. Replace with the following
+
+```cs
+using UnityEngine;
+using Photon.Pun;
+
+/// <summary>
+/// Player manager.
+/// </summary>
+public class PlayerManager : MonoBehaviourPunCallbacks
+{
+    #region Public fields
+
+    [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
+    public static GameObject LocalPlayerInstance;
+
+    #endregion
+
+    #region MonoBehaviour CallBacks
+
+    void Awake()
+    {
+        // #Important
+        // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
+        if (photonView.IsMine)
+        {
+            PlayerManager.LocalPlayerInstance = this.gameObject;
+        }
+        // #Critical
+        // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+        DontDestroyOnLoad(this.gameObject);
+    }
+    #endregion
+}
+```
+
 ### Game Manager Prefab
 
 In all cases, the minimum requirement for a User Interface is to be able to quit the room. Let's start by creating what we'll call the *Game Manager prefab*, and the first task it will handle quitting the room the local Player is currently in.
@@ -207,66 +269,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 }
 ```
 Drag and drop the *Game Manager* GameObject to the 'Game Manager' slot on the Launcher class (part of the 'Launcher' GameObject in the Hierarchy).
-
-### Player Prefab
-
-To instantiate our "Player" prefab  when we've just entered the room. We can rely on the GameManager Script *Start()* method which will indicated we've loaded the scene, which means by our design that we are in a room. An important rule to know about PUN is, that a Prefab, that should get instantiated over the network, has to be inside a Resources folder.
-
-1. Create a new c# script *PlayerManager*
-2. Create an empty GameObject in the Scene, name it 'Player'
-3. Drop the *PlayerManager* script onto the GameObject 'Player'
-4. In your "Project Browser", create a folder named exactly "Resources" somewhere, typically it's suggested that you organized your content, so could have something like "Resources\Prefabs" 
-5. Turn *Player* into a prefab by dragging it from the scene Hierarchy to the "Resources\Prefabs" folder, it will turn blue in the Hierarchy.
-6. Remove the 'Player' object from the Hierarchy
-
-We need to have a **PhotonView component** attached to our *Player* prefab. A **PhotonView** is what connects together the various instances on each computers and define what components to observe and how to observe these components. 
-
-1. Add a *PhotonView* Component to the 'Player' prefab
-2. Set the Observe Option to Unreliable On Change
-3. Notice *PhotonView* warns you that you need to observe something for this to have any effects. You can ignore this for now, as those observed components will be setup later in the tutorial.
-
-The obvious feature we want to synchronize is the Position and Rotation of the character so that when a player is moving around, the character behave in a similar way on other players' instances of the game. To make this common task easy, we are going to use a **PhotonTransformView** component.
-
-1. Add a *PhotonTransformView* to 'Player' Prefab
-2. Drag the *PhotonTransformView* from its header title onto the first observable component entry on the *PhotonView* component
-3. Now, check Synchronize Position in *PhotonTransformView*
-4. Check Synchronize Rotation
-5. Edit *PlayerManager* Script
-6. Replace with the following
-
-```cs
-using UnityEngine;
-using Photon.Pun;
-
-/// <summary>
-/// Player manager.
-/// </summary>
-public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
-{
-    #region Public fields
-
-    [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
-    public static GameObject LocalPlayerInstance;
-
-    #endregion
-
-    #region MonoBehaviour CallBacks
-
-    void Awake()
-    {
-        // #Important
-        // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
-        if (photonView.IsMine)
-        {
-            PlayerManager.LocalPlayerInstance = this.gameObject;
-        }
-        // #Critical
-        // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
-        DontDestroyOnLoad(this.gameObject);
-    }
-    #endregion
-}
-```
 
 Once all the steps above are complete follow the [Build and deploy the application](https://docs.microsoft.com/en-gb/windows/mixed-reality/mrlearning-base-ch1#2-build-and-deploy-the-application) instructions. When ready, press the Play button and connect your HoloLens 2. You should see a sphere moving around as you move your player using the keyboard arrows in Game view. This will be shown for any user that joins your Unity project!
 
