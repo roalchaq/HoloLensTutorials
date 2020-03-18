@@ -210,36 +210,25 @@ In all cases, the minimum requirement for a User Interface is to be able to quit
 
 ```cs
 using System.IO;
-using System.Collections;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
-    [Tooltip("The prefab to use for representing the player")]
-    public GameObject playerPrefab;
-
     #region MonoBehaviour Callbacks
 
     void Start()
     {
-        if (playerPrefab == null)
+        if (PlayerManager.LocalPlayerInstance == null)
         {
-            Debug.LogError("<Color=Red><a>Missing</a></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
+            // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+            GameObject agent = PhotonNetwork.Instantiate(Path.Combine("Prefabs", "Player"), Vector3.zero, Quaternion.identity, 0);
+            agent.transform.parent = Camera.main.transform;
         }
         else
         {
-            if (PlayerManager.LocalPlayerInstance == null)
-            {
-                // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-                GameObject agent = PhotonNetwork.Instantiate(Path.Combine("Prefabs", "Player"), Vector3.zero, Quaternion.identity, 0);
-                agent.transform.parent = Camera.main.transform;
-            }
-            else
-            {
-                Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
-            }
+            Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
         }
     }
     #endregion
