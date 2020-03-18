@@ -257,7 +257,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     #endregion
 }
 ```
-Drag and drop the *Game Manager* GameObject to the 'Game Manager' slot on the Launcher class (part of the 'Launcher' GameObject in the Hierarchy).
+Drag and drop the *Game Manager* GameObject to the 'Game Manager' slot on the Launcher class (part of the 'Launcher' GameObject in the Hierarchy). Then, disable the 'Game Manager' GameObject from the Hierarchy (using the checkbox next to the GameObject name in the Inspector panel).
 
 Once all the steps above are complete follow the [Build and deploy the application](https://docs.microsoft.com/en-gb/windows/mixed-reality/mrlearning-base-ch1#2-build-and-deploy-the-application) instructions. When ready, press the Play button and connect your HoloLens 2. You should see a sphere moving around as you move your player using the keyboard arrows in Game view. This will be shown for any user that joins your Unity project!
 
