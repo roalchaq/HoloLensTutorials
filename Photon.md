@@ -137,7 +137,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
 ### Player Prefab
 
-To instantiate our "Player" prefab  when we've just entered the room. We can rely on the GameManager Script *Start()* method which will indicated we've loaded the scene (next section), which means by our design that we are in a room. An important rule to know about PUN is, that a Prefab, that should get instantiated over the network, has to be inside a Resources folder.
+To instantiate our "Player" prefab  when we've just entered the room. We can rely on the GameManager Script *Start()* method which will indicated we've loaded the scene (next section), which means by our design that we are in a room. An important rule to know about PUN is that a Prefab that should get instantiated over the network, has to be inside a folder named **exactly** Resources.
 
 1. Create a new c# script *PlayerManager*
 2. Create an empty GameObject in the Scene, name it 'Player'
